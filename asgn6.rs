@@ -7,9 +7,9 @@ struct Env {
 }
 
 // ExprC
-trait ExprC<RHS=Self> {
+trait ExprC<T, RHS=Self> {
 	type Value;
-	fn new(n: i32) -> Self;
+	fn new(n: T) -> Self;
 	fn interp(&self) -> Self::Value;
 }
 
@@ -35,13 +35,17 @@ struct StringC<'a> {
 // }
 
 // Values
-trait Value<RHS=Self> {
-	fn new(n: i32) -> Self;
+trait Value<T, RHS=Self> {
+	fn new(n: T) -> Self;
 	fn serialize(&self)-> String;
 }
 
 struct NumV {
 	n: i32
+}
+
+struct BoolV {
+    b: bool
 }
 
 struct StrV {
@@ -57,7 +61,7 @@ struct PrimV {
 }	
 
 // Method implementations
-impl ExprC<NumV> for NumC {
+impl ExprC<i32, NumV> for NumC {
 	type Value = NumV;
 	fn new(n: i32) -> Self
 	{
@@ -69,7 +73,19 @@ impl ExprC<NumV> for NumC {
 	}
 }
 
-impl Value for NumV {
+impl ExprC<bool, BoolV> for BoolC {
+	type Value = BoolV;
+	fn new(b: bool) -> Self
+	{
+		BoolC {b: b}
+	}
+	fn interp(&self) -> BoolV
+	{
+		BoolV::new(self.b)
+	}
+}
+
+impl Value<i32, NumV> for NumV {
 	fn new(n: i32) -> Self
 	{
 		NumV {n: n}
@@ -77,6 +93,17 @@ impl Value for NumV {
 	fn serialize(&self) -> String
 	{
 		self.n.to_string()
+	}
+}
+
+impl Value<bool, BoolV> for BoolV {
+	fn new(b: bool) -> Self
+	{
+		BoolV {b: b}
+	}
+	fn serialize(&self) -> String
+	{
+		self.b.to_string()
 	}
 }
 
@@ -105,7 +132,3 @@ fn main() {
     println!("IdC: {}", sym1.s);
     println!("{}", n1);
 }
-
-
-
-
