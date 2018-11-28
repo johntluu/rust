@@ -25,8 +25,8 @@ struct BoolC {
     b: bool
 }
 
-struct StringC<'a> {
-    s: &'a str
+struct StringC {
+    s: String
 }
 
 // struct AppC<'a> {
@@ -45,7 +45,7 @@ struct NumV {
 }
 
 struct BoolV {
-    b: bool
+	b: bool
 }
 
 struct StrV {
@@ -56,9 +56,9 @@ struct CloV {
 	
 }	
 
-struct PrimV {
-	
-}	
+//struct PrimV {
+//	f: fn(&Value, &Value) -> &Value
+//}	
 
 // Method implementations
 impl ExprC<i32, NumV> for NumC {
@@ -73,6 +73,7 @@ impl ExprC<i32, NumV> for NumC {
 	}
 }
 
+
 impl ExprC<bool, BoolV> for BoolC {
 	type Value = BoolV;
 	fn new(b: bool) -> Self
@@ -84,8 +85,32 @@ impl ExprC<bool, BoolV> for BoolC {
 		BoolV::new(self.b)
 	}
 }
+impl ExprC<String, StrV> for StringC {
+	type Value = StrV;
+	fn new(s: String) -> Self
+	{
+		StringC {s: s}
+	}
+	fn interp(&self) -> StrV
+	{
+		StrV::new(self.s.to_string())
+	}
+}
+
+/*impl ExprC<PrimV> for AppC {
+	type Value = NumV;
+	fn new(n: i32) -> Self
+	{
+		NumC {n: n}
+	}
+	fn interp(&self) -> NumV
+	{
+		NumV::new(self.n)
+	}
+}*/
 
 impl Value<i32, NumV> for NumV {
+
 	fn new(n: i32) -> Self
 	{
 		NumV {n: n}
@@ -114,15 +139,57 @@ impl fmt::Display for NumC {
     }
 }
 
+
+impl Value<String, StrV> for StrV {
+	fn new(s: String) -> Self
+	{
+		StrV {s: s}
+	}
+	fn serialize(&self) -> String
+	{
+		self.s.to_string()
+	}
+}
+
+//impl Value for CloV {
+	//fn new(b: bool) -> Self
+	//{
+	//	CloV {b: b}
+	//}
+//	fn serialize(&self) -> String
+//	{
+//		"#<procedure>"
+//	}
+//}
+
+//impl Value for PrimV {
+	//fn new(b: bool) -> Self
+	//{
+	//	PrimV {b: b}
+	//}
+//	fn serialize(&self) -> String
+//	{
+//		"#<primop>"
+//}
+
+
 fn main() {
 	let num1 = NumC {n: 1};
 	let num1V = NumV {n: 1}; 
 	let nv1 = num1.interp();
 	assert_eq!(num1V.n, nv1.n);
+	let st1 = StringC {s: "hello".to_string()};
+	let st1V = StrV {s: "hello".to_string()}; 
+	let sv1 = st1.interp();
+	assert_eq!(st1V.s, sv1.s);
+	let bo1 = BoolC {b: true};
+	let bo1V = BoolV {b: true}; 
+	let bv1 = bo1.interp();
+	assert_eq!(bo1V.b, bv1.b);
     println!("Hello World!");
 
     let n1 = NumC {n: 53};
-    let str1 = StringC {s: "lol"};
+    let str1 = StringC {s: "lol".to_string()};
     let b1 = BoolC {b: true};
     let sym1 = IdC {s: "haha"};
     //let app1 = AppC {func: &NumC {n: 1}, args: vec![]};
