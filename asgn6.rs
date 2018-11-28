@@ -187,7 +187,7 @@ fn main() {
 	let bv1 = bo1.interp();
 	assert_eq!(bo1V.b, bv1.b);
     println!("Hello World!");
-
+    
     let n1 = NumC {n: 53};
     let str1 = StringC {s: "lol".to_string()};
     let b1 = BoolC {b: true};
